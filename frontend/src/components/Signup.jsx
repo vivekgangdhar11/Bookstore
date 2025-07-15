@@ -1,8 +1,16 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => console.log(data);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-base-100 dark:bg-slate-900">
@@ -17,23 +25,44 @@ function Signup() {
         <h3 className="font-bold text-lg mb-4 text-center dark:text-white">
           Sign Up
         </h3>
-        <form className="flex flex-col gap-4">
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
           <input
             type="text"
             placeholder="Name"
             className="input input-bordered w-full max-w-xs mx-auto"
+            {...register("name", { required: true })}
           />
+          {errors.name && (
+            <span className="text-red-500 text-xs mx-auto">
+              This field is required
+            </span>
+          )}
           <input
             type="email"
             placeholder="Email"
             className="input input-bordered w-full max-w-xs mx-auto"
+            {...register("email", { required: true })}
           />
+          {errors.email && (
+            <span className="text-red-500 text-xs mx-auto">
+              This field is required
+            </span>
+          )}
           <input
             type="password"
             placeholder="Password"
             className="input input-bordered w-full max-w-xs mx-auto"
+            {...register("password", { required: true })}
           />
-          <button className="btn bg-black text-white w-full max-w-xs mx-auto">
+          {errors.password && (
+            <span className="text-red-500 text-xs mx-auto">
+              This field is required
+            </span>
+          )}
+          <button
+            className="btn bg-black text-white w-full max-w-xs mx-auto"
+            type="submit"
+          >
             Sign Up
           </button>
         </form>
