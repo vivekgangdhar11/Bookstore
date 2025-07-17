@@ -1,9 +1,27 @@
 import React from "react";
+import { useState,useEffect } from "react"; // Importing useState for state management
 import Cards from "./Cards"; // Assuming Cards is a component that displays course cards
-import list from "../../public/list.json"; // Importing course data
 import { Link } from "react-router-dom"; // Importing Link for navigation
+import { use } from "react";
+import axios from "axios"; // Importing axios for making HTTP requests  
 
 function Course() {
+  const[books, setBooks] = useState([]);
+  useEffect(() => {
+    const getBooks = async () => {
+      try {
+        const res= await axios.get("http://localhost:4001/book");
+        console.log(res.data);
+        setBooks(res.data);
+      }
+      catch (error) {
+        console.log("Error fetching books:", error);
+      }
+    }
+    getBooks();
+  }, []);
+
+        
   return (
     <>
       <div className="max-w-screen-2xl container mx-auto md:px-20 px-4 ">
@@ -28,7 +46,7 @@ function Course() {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {list.map((item) => (
+          {books.map((item) => (
             <Cards key={item.id} item={item} />
           ))}
         </div>
