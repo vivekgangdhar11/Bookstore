@@ -26,10 +26,18 @@ export const signup = async (req, res) => {
     const user = new User({ fullname, email, password: hashedPassword });
     await user.save();
 
-    return res.status(201).json({ message: "User created successfully" });
+    res.status(201).json({
+      message: "User created successfully",
+      user: {
+        fullname: user.fullname,
+        email: user.email,
+      },
+    });
   } catch (error) {
-    console.error("Error during signup:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    if (error.response) {
+      console.log(error);
+      alert("Error: " + error.response.data.message);
+    }
   }
 };
 export const login = async (req, res) => {
@@ -38,7 +46,9 @@ export const login = async (req, res) => {
 
     // Validate fields
     if (!email || !password) {
-      return res.status(400).json({ message: "Email and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     // Find user by email
@@ -58,4 +68,4 @@ export const login = async (req, res) => {
     console.error("Error during login:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
-}
+};

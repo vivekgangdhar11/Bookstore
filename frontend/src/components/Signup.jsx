@@ -1,6 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Signup() {
   const navigate = useNavigate();
@@ -10,7 +11,35 @@ function Signup() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = async (data) => {
+    const userInfo = {
+      fullname: data.fullname,
+      email: data.email,
+      password: data.password,
+    };
+    await axios
+      .post("http://localhost:4001/user/signup", userInfo)
+      .then((response) => {
+        if (response.data.success) {
+          alert("Signup successful! Please log in.");
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          
+        } else {
+          alert("Signup failed: " + response.data.message);
+        }
+      })
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          alert("Signup failed: " + error.response.data.message);
+        } else {
+          alert("An error occurred during signup. Please try again.");
+        }
+      });
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-base-100 dark:bg-slate-900">
@@ -30,9 +59,9 @@ function Signup() {
             type="text"
             placeholder="Name"
             className="input input-bordered w-full max-w-xs mx-auto"
-            {...register("name", { required: true })}
+            {...register("fullname", { required: true })}
           />
-          {errors.name && (
+          {errors.fullname && (
             <span className="text-red-500 text-xs mx-auto">
               This field is required
             </span>

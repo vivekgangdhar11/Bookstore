@@ -1,20 +1,50 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../context/AuthProvider"; // ✅ import useAuth
 
 function Login() {
   const {
     register,
     handleSubmit,
-
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
+  const { setAuthUser } = useAuth(); // ✅ get setAuthUser from context
+
+  const onSubmit = async (data) => {
+    const userInfo = {
+      email: data.email,
+      password: data.password,
+    };
+    await axios
+      .post("http://localhost:4001/user/login", userInfo)
+      .then((response) => {
+        if (response.data.success) {
+          alert("Login successful!");
+          localStorage.setItem("Users", JSON.stringify(response.data.user)); // ✅ Note key name is "Users" as in AuthProvider
+          setAuthUser(response.data.user); // ✅ update context state
+          document.getElementById("my_modal_3").close(); // optional
+        } else {
+          alert("Signup failed: " + response.data.message);
+        }
+      })
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          alert("Signup failed: " + error.response.data.message);
+        } else {
+          alert("An error occurred during signup. Please try again.");
+        }
+      });
+  };
+
   return (
     <div>
-      {/* You can open the modal using document.getElementById('ID').showModal() method */}
-
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box">
           <form
